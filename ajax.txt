@@ -1,0 +1,48 @@
+/**
+ * Created by Administrator on 2017-11-22.
+ */
+//AJAX.method 请求方法get/post
+//AJAX.url 请求地址
+//AJAX.data 请求的传参数据
+//AJAX.dataType 接收的数据格式json
+//AJAX.success 请求成功后 处理的方法
+function ajax(AJAX){
+  AJAX = AJAX || {};
+  AJAX.url = AJAX.url || '';
+  AJAX.data = AJAX.data || null;
+  AJAX.success = AJAX.success || function () {};
+//把对象类的data转化成原生ajax能读的数据
+  var param="?";
+  for(i in AJAX.data){
+    param+=i+'='+AJAX.data[i]+'&';
+  }
+  param=param.substr(0,param.length-1).substr(1,param.length);
+//结束
+
+  var httpRequest = new XMLHttpRequest();
+  if (window.XMLHttpRequest){
+    httpRequest = new XMLHttpRequest();
+  }else {
+    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  if(AJAX.method=="get" && param) {
+    httpRequest.open(AJAX.method, AJAX.url + "?" + param);
+  }else{
+    httpRequest.open(AJAX.method, AJAX.url);
+  }
+    httpRequest.onreadystatechange=function(){
+      if(httpRequest.readyState==4 && httpRequest.status==200){
+        var data=httpRequest.responseText;
+        if(AJAX.dataType=="json"){
+          data=JSON.parse(data);
+        }
+        AJAX.success(data);
+      }
+    }
+    if(AJAX.method=="post"){
+      httpRequest.setRequestHeader("content-type","application/x-www-form-urlencoded");
+      httpRequest.send(param);
+    }else{
+      httpRequest.send(null);
+    }
+  }
